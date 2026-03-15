@@ -1,7 +1,0 @@
-Identifiers
-Keywords
-Constants
-Operators
-Punctuation
-Literals
-Unknown
