@@ -1,9 +1,30 @@
+"""
+Purpose:
+    Generation and configuration of the graphical user interface where the user will be able to input text to the lexical analyzer, as well as the input and output configuration of the program so the user can submit the input and receive the response from the lexical analyzer.
+
+Authors:
+    Team 7:
+    - Alvarez Salgado Eduardo Antonio
+    - González Vázquez Alejandro
+    - Jiménez Olivo Evelin
+    - Lara Hernández Emmanuel
+    - Parra Fernández Héctor Emilio
+
+Date:
+    March 15, 2026
+
+Dependencies:
+    - tkinter (Standard Python library for creating GUIs)
+    - pathlib (Standard Python library for OS-independent path handling)
+    - lexer (Custom local module containing the Lexer class)
+"""
+
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from pathlib import Path
 from lexer import Lexer
 
-
+# Implements hexadecimal color codes for the dark mode theme.
 BG_COLOR = "#121212"
 CARD_COLOR = "#1e1e1e"
 TEXT_BG = "#0f0f0f"
@@ -15,6 +36,16 @@ BORDER = "#333333"
 
 
 def format_results(tokens, total_tokens):
+    """
+    This function is responsible for receiving the data processed by the lexer.py program 
+    and formatting it into readable output.
+    
+    - Acts as an error filter by detecting "UNKNOWN" tokens, halting the process, 
+      and returning a warning with the respective unidentified tokens.
+    - Organizes the tokens into established categories (keywords, identifiers, operators, 
+      constants, and punctuation marks) and sorts them alphabetically.
+    - Indicates the final token count.
+    """
     if tokens["Unknown"]:
         result = "Error: There are unrecognized tokens in the input.\n"
         result += f"Unknown tokens: {sorted(tokens['Unknown'])}"
@@ -39,6 +70,13 @@ def format_results(tokens, total_tokens):
 
 
 def run_gui():
+    """
+    Function responsible for deploying the window and displaying the interface.
+    """
+    
+    # ---------- A. Window Configuration ----------
+    # Creates the main window with the title "Lexer", setting its default size 
+    # as well as the minimum size it can be scaled down to.
     root = tk.Tk()
     root.title("Lexer")
     root.geometry("980x700")
@@ -53,14 +91,20 @@ def run_gui():
     text_font = ("Courier New", 11)
     button_font = ("Arial", 10, "bold")
 
+    # ---------- B. Visual Effect Functions (Hover) ----------
+    # Changes the color of the buttons when the mouse hovers over them.
     def on_enter(event, button, hover_color):
         button.config(bg=hover_color)
 
     def on_leave(event, button, normal_color):
         button.config(bg=normal_color)
 
-    # ---------- functions ----------
+    # ---------- C. Button Logic ----------
     def analyze_text():
+        """
+        Reads the text entered by the user. If the input is empty, it triggers a warning. 
+        If text is found, it sends it to the Lexer class and returns the result to print it on the output screen.
+        """
         text = input_text.get("1.0", tk.END).strip()
 
         if not text:
@@ -77,6 +121,10 @@ def run_gui():
         output_text.config(state=tk.DISABLED)
 
     def open_file():
+        """
+        Responsible for opening the file explorer to access a document 
+        (either .txt or .c), reading its content, and analyzing it.
+        """
         file_path = filedialog.askopenfilename(
             title="Open file",
             filetypes=[("C files", "*.c *.h *.txt"), ("All files", "*.*")]
@@ -105,16 +153,22 @@ def run_gui():
             messagebox.showerror("Error", f"Could not open file:\n{e}")
 
     def clear_all():
+        """
+        Clears all content in both the input and output areas.
+        """
         input_text.delete("1.0", tk.END)
         output_text.config(state=tk.NORMAL)
         output_text.delete("1.0", tk.END)
         output_text.config(state=tk.DISABLED)
 
-    # ---------- main wrapper ----------
+    # ---------- D. Visual Interface Construction (Widgets) ----------
+    # Responsible for generating the graphical interface using tkinter.
+
+    # wrapper: Creates a margin around all elements.
     wrapper = tk.Frame(root, bg=BG_COLOR)
     wrapper.pack(fill="both", expand=True, padx=18, pady=18)
 
-    # ---------- title ----------
+    # title_label: Sets the title of the lexical analyzer.
     title_label = tk.Label(
         wrapper,
         text="Lexer",
@@ -124,7 +178,7 @@ def run_gui():
     )
     title_label.pack(pady=(0, 14))
 
-    # ---------- input card ----------
+    # input_card: Acts as a frame simulating a visual card.
     input_card = tk.Frame(
         wrapper,
         bg=CARD_COLOR,
@@ -133,6 +187,7 @@ def run_gui():
     )
     input_card.pack(fill="both", expand=True, pady=(0, 12))
 
+    # input_label: The text label displaying 'Input code'.
     input_label = tk.Label(
         input_card,
         text="Input code",
@@ -145,9 +200,11 @@ def run_gui():
     input_text_frame = tk.Frame(input_card, bg=CARD_COLOR)
     input_text_frame.pack(fill="both", expand=True, padx=14, pady=(0, 14))
 
+    # input_scroll: Scrollbar for the input text area.
     input_scroll = tk.Scrollbar(input_text_frame)
     input_scroll.pack(side="right", fill="y")
 
+    # input_text: Text area where the user can write the input.
     input_text = tk.Text(
         input_text_frame,
         height=14,
@@ -164,7 +221,8 @@ def run_gui():
     input_text.pack(fill="both", expand=True)
     input_scroll.config(command=input_text.yview)
 
-    # ---------- buttons ----------
+    # button_frame: Container holding the three buttons ("Analyze String", "Open File", "Clear") 
+    # along with their respective visual methods.
     button_frame = tk.Frame(wrapper, bg=BG_COLOR)
     button_frame.pack(fill="x", pady=(0, 12))
 
@@ -228,7 +286,7 @@ def run_gui():
     clear_button.bind("<Enter>", lambda e: on_enter(e, clear_button, "#3a3a3a"))
     clear_button.bind("<Leave>", lambda e: on_leave(e, clear_button, SECONDARY))
 
-    # ---------- output card ----------
+    # output_card: Card that displays the program's output.
     output_card = tk.Frame(
         wrapper,
         bg=CARD_COLOR,
@@ -269,4 +327,6 @@ def run_gui():
     output_text.pack(fill="both", expand=True)
     output_scroll.config(command=output_text.yview)
 
+    # ---------- E. Main Loop ----------
+    # root.mainloop(): Allows the interface to keep running and wait for user interaction.
     root.mainloop()
