@@ -91,7 +91,10 @@ class Grammar:
             'PRIMARY': [['id', 'PRIMARY_ID_REST'], ['constant'], ['literal'], ['(', 'E', ')']],
             'PRIMARY_ID_REST': [['(', 'ARG_LIST_OPT', ')'], ['epsilon']]
         }
-
+    def get_productions_for(self, non_terminal):
+        """ Returns the list of productions for a given non-terminal """
+        return self.productions.get(non_terminal, [])
+    
     def display_in_window(self):
         """ 
         Initializes a Tkinter graphical interface to render the grammar rules.
