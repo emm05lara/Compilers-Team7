@@ -29,12 +29,12 @@ class Symbol:
         self.name = name
         self.type = symbol_type
         self.line = line
-        self.is_func = is_function
+        self.is_function = is_function
         self.initialized = False
         self.params = []  # Used if it's a function
 
     def __repr__(self):
-        cat = "FUNC" if self.is_func else "VAR"
+        cat = "FUNC" if self.is_function else "VAR"
         return f"[{cat}] {self.name} ({self.type}) - Init: {self.initialized}"
 
 class SymbolTable:
@@ -105,7 +105,7 @@ class SymbolTable:
             scope_name = "Global" if i == 0 else f"Local Level {i}"
             print(f"{scope_name}: {scope}")
 
-# --- Test Script ---
+# Test Script 
 if __name__ == "__main__":
     st = SymbolTable()
     

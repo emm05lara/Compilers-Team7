@@ -12,7 +12,7 @@ from pathlib import Path
 from PIL import Image, ImageTk
 
 from Lexer.lexer import Lexer
-from Parser.parser_sdt import Parser 
+from Parser.parser_sdt import Parser
 from Ast.ast_visualizer import render_ast
 
 
@@ -111,7 +111,6 @@ def run_gui():
     # --------------------------------------------------------
     # Compiler execution logic
     # --------------------------------------------------------
-
     def analyze_text():
         global lexer_results, parser_derivation
 
@@ -122,57 +121,87 @@ def run_gui():
             return
 
         try:
+            # -------------------------
+            # LEXER
+            # -------------------------
             lexer = Lexer(text.split("\n"), str(resource_dir))
             lexer_results = lexer.tokenize()
 
             unknown_tokens = [
-                token for token in lexer_results
-                if token["type"] == "Unknown"
+                t for t in lexer_results if t["type"] == "Unknown"
             ]
 
             if unknown_tokens:
                 errors = "\n".join(
-                    f"Unknown token '{token['value']}' at line "
-                    f"{token['line']}, column {token['column']}"
-                    for token in unknown_tokens
+                    f"Unknown token '{t['value']}' at line {t['line']}, col {t['column']}"
+                    for t in unknown_tokens
                 )
 
                 parser_derivation = (
-                    "Lexical analysis failed.\n\n"
-                    "Unknown tokens found:\n"
-                    f"{errors}\n\n"
-                    "Parsing and SDT validation were not executed."
+                    "Parsing Error...\n"
+                    "Lexical Error...\n\n"
+                    + errors
                 )
 
                 ast_label.config(image="")
                 show_output()
+
                 messagebox.showerror("Lexical Error", errors)
                 return
 
+            # -------------------------
+            # PARSER + SDT
+            # -------------------------
             parser = Parser(lexer_results)
             ast = parser.parse_program()
-            parser_derivation = parser.get_derivation(ast)
 
+            semantic_errors = parser.sdt_errors + parser.symbol_table.errors
+
+            if semantic_errors:
+                parser_derivation = (
+                    "Parsing Success!\n"
+                    "SDT Error...\n\n"
+                    + "\n".join(semantic_errors)
+                )
+
+                messagebox.showwarning(
+                    "SDT Error",
+                    "Parsing Success!\nSDT Error..."
+                )
+
+            else:
+                parser_derivation = (
+                    "Parsing Success!\n"
+                    "SDT Verified!"
+                )
+
+                messagebox.showinfo(
+                    "Success",
+                    "Parsing Success!\nSDT Verified!"
+                )
+
+            # -------------------------
+            # AST
+            # -------------------------
             ast_path = output_dir / "ast_output"
             image_path = render_ast(ast, str(ast_path), "png")
 
             show_ast_image(image_path)
             show_output()
 
-            if parser.sdt_errors:
-                messagebox.showwarning(
-                    "SDT Error",
-                    "Parsing completed, but semantic errors were found."
-                )
-            else:
-                messagebox.showinfo(
-                    "Success",
-                    "Parsing Success!\nSDT Verified!\nAST Generated!"
-                )
-
         except Exception as error:
+            parser_derivation = (
+                "Parsing Error...\n"
+                f"{error}"
+            )
+
             ast_label.config(image="")
-            messagebox.showerror("Syntax Error", str(error))
+            show_output()
+
+            messagebox.showerror(
+                "Parsing Error",
+                f"Parsing Error...\n{error}"
+            )
 
     # --------------------------------------------------------
     # UI Elements
