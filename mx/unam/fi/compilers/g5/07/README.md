@@ -121,7 +121,7 @@ Compilers-Team7/
 
 ##  Module Description
 
-### lexer1.py
+### lexer.py
 Performs lexical analysis:
 
 - Tokenizes source code  
@@ -155,7 +155,7 @@ Includes checks for:
 
 ---
 
-### gui1.py
+### gui.py
 
 - Provides user interface  
 - Displays tokens, derivation, and AST  
