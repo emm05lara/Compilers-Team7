@@ -173,15 +173,19 @@ python main.py
 
 ---
 
-##  Installation
+## Installation
+
+To ensure the C-Pure Compiler runs correctly—especially the Graphical User Interface (GUI) and the Abstract Syntax Tree (AST) visualization—you need to install the following dependencies.
 
 ### 1. Upgrade pip
 
+First, ensure your Python package installer is up to date:
 ```bash
 python -m pip install --upgrade pip
-```
-
+````
 ### 2. Install dependencies
+The compiler requires two Python libraries to generate and display the visual output:
+graphviz and pillow.
 
 ```bash
 pip install graphviz pillow
@@ -189,15 +193,17 @@ pip install graphviz pillow
 
 ### 3. Install Graphviz (system)
 
+You must install the actual Graphviz software on your operating system
 Download:  
 https://graphviz.org/download/
 
 Add to PATH (Windows):
+During installation, make sure to check the box that says "Add Graphviz to the system PATH". If you skipped that step, you must manually add its bin folder to your Windows Environment Variables:
 
 ```
 C:\Program Files\Graphviz\bin
 ```
-
+You must completely restart your terminal or IDE, like VS Code, after installing Graphviz so the PATH changes take effect
 ---
 
 ## ▶ Usage
